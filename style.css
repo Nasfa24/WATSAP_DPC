@@ -1,0 +1,106 @@
+:root {
+    --primary: #03754c; /* Hijau */
+    --secondary: #FF9c08; /* Oranye */
+    --accent: #fff212; /* Kuning */
+    --bg: #fefefe; /* Putih */
+    --text: #000000; /* Hitam */
+    --danger: #e74c3c;
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+body {
+    background-color: #f4f7f6;
+    color: var(--text);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Decoratif Background untuk menghindari kesan flat */
+.background-decor {
+    position: absolute; top: -20vh; left: -10vw; width: 50vw; height: 50vw;
+    background: radial-gradient(circle, rgba(255,156,8,0.15) 0%, rgba(254,254,254,0) 70%);
+    z-index: -1;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+.app-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;
+    padding: 1.5rem; background: var(--bg); border-radius: 16px;
+    box-shadow: 0 10px 30px var(--shadow); border-bottom: 4px solid var(--primary);
+}
+
+.brand { display: flex; align-items: center; gap: 1rem; color: var(--primary); }
+.logo-icon { font-size: 2.5rem; color: var(--primary); }
+h1 { font-size: 1.8rem; font-weight: 700; }
+
+.header-actions { display: flex; gap: 0.8rem; }
+
+/* Buttons dengan Gradient dan Shadow */
+.btn {
+    border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer;
+    font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+.btn:active { transform: translateY(1px); }
+
+.btn-primary { background: linear-gradient(135deg, var(--primary), #025638); color: var(--bg); }
+.btn-warning { background: linear-gradient(135deg, var(--secondary), #e08907); color: var(--bg); }
+.btn-danger { background: linear-gradient(135deg, var(--danger), #c0392b); color: var(--bg); }
+.btn-secondary { background: var(--bg); border: 1px solid #ddd; color: var(--text); }
+.btn-large { width: 100%; padding: 1.2rem; font-size: 1.2rem; justify-content: center; margin-top: 1rem; }
+
+.dashboard { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
+
+/* Glass Effect Cards */
+.card {
+    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+    border-radius: 16px; padding: 2rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 4px solid var(--secondary);
+}
+
+.card h2 { margin-bottom: 1.5rem; color: var(--primary); font-size: 1.4rem; }
+
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.95rem; }
+
+.styled-input {
+    width: 100%; padding: 0.8rem 1rem; border-radius: 8px;
+    border: 2px solid #eee; font-size: 1rem; transition: all 0.3s ease;
+    background-color: #fafafa;
+}
+.styled-input:focus {
+    border-color: var(--primary); outline: none; background-color: var(--bg);
+    box-shadow: 0 0 0 4px rgba(3, 117, 76, 0.1);
+}
+
+.stats-box {
+    background: linear-gradient(135deg, var(--accent), #e6d900);
+    padding: 1rem; border-radius: 10px; text-align: center;
+    font-weight: 700; font-size: 1.2rem; margin-top: 1rem;
+    box-shadow: 0 5px 15px rgba(255, 242, 18, 0.3); color: var(--text);
+}
+#target-count { font-size: 2rem; display: block; color: var(--primary); }
+
+/* Progress Overlay */
+.hidden { display: none !important; }
+#progress-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+    display: flex; justify-content: center; align-items: center; z-index: 1000;
+}
+.progress-card { width: 90%; max-width: 500px; text-align: center; background: #fff; padding: 2rem; border-radius: 16px; border-top: 4px solid var(--primary); }
+.progress-bar-container { width: 100%; height: 20px; background: #eee; border-radius: 10px; overflow: hidden; margin: 1.5rem 0; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
+.progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--secondary), var(--primary)); transition: width 0.3s ease; }
+.log-container { height: 120px; overflow-y: auto; text-align: left; background: #f9f9f9; padding: 1rem; border-radius: 8px; font-size: 0.85rem; border: 1px solid #eee; margin-top: 1rem; }
+.log-item { margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px solid #eee; }
+.log-success { color: var(--primary); }
+.log-error { color: var(--danger); }

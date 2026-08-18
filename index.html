@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Broadcast WA - Pengurus</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 untuk Notifikasi Non-Flat -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-decor"></div>
+    
+    <div class="container">
+        <header class="app-header">
+            <div class="brand">
+                <i class="fa-brands fa-whatsapp logo-icon"></i>
+                <h1>WA Broadcast Pro</h1>
+            </div>
+            <div class="header-actions">
+                <button id="btn-refresh" class="btn btn-warning"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</button>
+                <button id="btn-clear-cache" class="btn btn-danger"><i class="fa-solid fa-trash-can"></i> Clear Cache</button>
+                <button id="btn-settings" class="btn btn-secondary"><i class="fa-solid fa-gear"></i> Setup API</button>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <!-- Filter Section -->
+            <section class="card glass-effect">
+                <h2><i class="fa-solid fa-users-viewfinder"></i> Target Penerima</h2>
+                <div class="form-group">
+                    <label for="filter-wilayah">Pilih Wilayah:</label>
+                    <select id="filter-wilayah" class="styled-input">
+                        <option value="semua">Semua Wilayah (Kecamatan & Kelurahan)</option>
+                        <option value="kecamatan">Khusus Pengurus Kecamatan</option>
+                        <option value="kelurahan">Khusus Pengurus Kelurahan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filter-jabatan">Pilih Target Jabatan:</label>
+                    <select id="filter-jabatan" class="styled-input">
+                        <option value="semua">Semua Pengurus</option>
+                        <option value="inti">Pimpinan Inti (Ketua, Sekretaris, Bendahara Syuro & Tanfidziyah)</option>
+                        <option value="ketua_saja">Ketua Saja (Syuro & Tanfidziyah)</option>
+                    </select>
+                </div>
+                <div class="stats-box">
+                    <span id="target-count">0</span> Kontak Terpilih
+                </div>
+            </section>
+
+            <!-- Message Section -->
+            <section class="card glass-effect">
+                <h2><i class="fa-solid fa-pen-to-square"></i> Isi Pesan</h2>
+                <div class="form-group">
+                    <label>Ketik pesan Anda (Gunakan {NAMA} untuk menyebut nama penerima secara otomatis):</label>
+                    <textarea id="pesan-text" class="styled-input" rows="6" placeholder="Assalamualaikum {NAMA}, undangan rapat..."></textarea>
+                </div>
+                <button id="btn-send" class="btn btn-primary btn-large"><i class="fa-solid fa-paper-plane"></i> Mulai Broadcast Sekarang</button>
+            </section>
+        </main>
+    </div>
+
+    <!-- Progress Overlay -->
+    <div id="progress-overlay" class="hidden">
+        <div class="progress-card glass-effect">
+            <h3>Mengirim Pesan...</h3>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <p id="progress-text">0 / 0 Terkirim</p>
+            <div id="log-container" class="log-container"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
