@@ -1,19 +1,16 @@
 /**
- * FRONTEND LOGIC - THE OCEAN BOILER
- * Fitur: Caching, Auto-Sanitize Number, Waha HTTP request, Dynamic Filtering
+ * FRONTEND LOGIC - MASTER VERSION
+ * Fitur: Caching, Auto-Sanitize Number, Dynamic Filtering, Queue Anti-Ban WA
  */
 
-// Konstanta Konfigurasi
 let CONFIG = {
     GAS_URL: localStorage.getItem('WA_GAS_URL') || '',
-    WAHA_URL: localStorage.getItem('WA_WAHA_URL') || 'http://localhost:3000'
+    WAHA_URL: localStorage.getItem('WA_WAHA_URL') || ''
 };
 
-// Global State
 let globalData = [];
 let filteredData = [];
 
-// DOM Elements
 const elRefresh = document.getElementById('btn-refresh');
 const elClearCache = document.getElementById('btn-clear-cache');
 const elSettings = document.getElementById('btn-settings');
@@ -23,20 +20,17 @@ const elTargetCount = document.getElementById('target-count');
 const elBtnSend = document.getElementById('btn-send');
 const elPesan = document.getElementById('pesan-text');
 
-// Custom SweetAlert Styling
 const Toast = Swal.mixin({
     toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
     timerProgressBar: true, background: '#fefefe', color: '#000000'
 });
 
-// Initialization
 document.addEventListener('DOMContentLoaded', async () => {
     checkConfig();
     await loadData();
     setupEventListeners();
 });
 
-// Event Listeners
 function setupEventListeners() {
     elRefresh.addEventListener('click', () => loadData(true));
     
@@ -61,21 +55,22 @@ function setupEventListeners() {
     elBtnSend.addEventListener('click', confirmBroadcast);
 }
 
-// Konfigurasi Setup
 async function openSettings() {
     const { value: formValues } = await Swal.fire({
         title: 'Konfigurasi API',
         html:
             `<div style="text-align:left; font-size:14px; margin-bottom:5px;">Google Apps Script URL:</div>`+
-            `<input id="swal-gas" class="swal2-input" value="${CONFIG.GAS_URL}" placeholder="https://script.google.com/...">` +
-            `<div style="text-align:left; font-size:14px; margin-bottom:5px; margin-top:15px;">WAHA Base URL (pastikan HTTPS jika Github Pages):</div>`+
-            `<input id="swal-waha" class="swal2-input" value="${CONFIG.WAHA_URL}" placeholder="http://localhost:3000">`,
+            `<input id="swal-gas" class="swal2-input" value="${CONFIG.GAS_URL}" placeholder="https://script.google.com/.../exec">` +
+            `<div style="text-align:left; font-size:14px; margin-bottom:5px; margin-top:15px;">WAHA Base URL (Ngrok):</div>`+
+            `<input id="swal-waha" class="swal2-input" value="${CONFIG.WAHA_URL}" placeholder="https://xxx.ngrok-free.dev">`,
         focusConfirm: false,
         confirmButtonColor: '#03754c',
         preConfirm: () => {
+            let wahaUrl = document.getElementById('swal-waha').value.trim();
+            if(wahaUrl.endsWith('/')) wahaUrl = wahaUrl.slice(0, -1); // Auto hapus slash di akhir
             return {
-                gas: document.getElementById('swal-gas').value,
-                waha: document.getElementById('swal-waha').value
+                gas: document.getElementById('swal-gas').value.trim(),
+                waha: wahaUrl
             }
         }
     });
@@ -100,7 +95,6 @@ function checkConfig() {
     }
 }
 
-// Data Fetching dengan Cache Management
 async function loadData(forceRefresh = false) {
     if (!CONFIG.GAS_URL) return;
 
@@ -135,28 +129,17 @@ async function loadData(forceRefresh = false) {
     }
 }
 
-// Logic Filter Kompleks
 function applyFilters() {
     const wilayah = elFilterWilayah.value;
     const jabatan = elFilterJabatan.value;
 
     filteredData = globalData.filter(row => {
-        // 1. Filter Wilayah
         let passWilayah = false;
-        // Asumsi: Jika Kecamatan, kolom KECAMATAN ada isi, tapi KELURAHAN mungkin kosong/berbeda format. 
-        // Kita gunakan logika: Pengurus Kecamatan = tidak memiliki kelurahan spesifik dalam jabatannya, ATAU ada flag khusus.
-        // Berdasarkan request: "Pengurus Kelurahan (saja)" / "Semua Pengurus Kecamatan dan Kelurahan".
-        // Karena struktur GSheet NIK, NAMA_LENGKAP, NO_HP, ALAMAT_JALAN, RT, RW, KELURAHAN, KECAMATAN, JABATAN.
-        // Asumsi Praktis: 
         if (wilayah === 'semua') passWilayah = true;
-        // Jika data Gsheet memiliki aturan: Jika Pengurus Kelurahan, kolom Kelurahan terisi.
         else if (wilayah === 'kelurahan' && row.KELURAHAN && row.KELURAHAN.trim() !== '') passWilayah = true;
-        // Jika data Gsheet Pengurus Kecamatan kolom Kelurahannya kosong (hanya Kecamatan)
         else if (wilayah === 'kecamatan' && (!row.KELURAHAN || row.KELURAHAN.trim() === '')) passWilayah = true;
-        // Jika data di lapangan berbeda, admin cukup sesuaikan di wilayah dropdown. Untuk keamanan kita loloskan sesuai dropdown.
-        else passWilayah = true; // Fallback toleransi jika data kotor
+        else passWilayah = true; 
 
-        // 2. Filter Jabatan
         let passJabatan = false;
         const jab = (row.JABATAN || '').toLowerCase();
         
@@ -164,14 +147,14 @@ function applyFilters() {
             passJabatan = true;
         } else if (jabatan === 'inti') {
             const keywords = ['ketua', 'sekretaris', 'bendahara'];
-            // Pastikan tidak menyertakan "Wakil" jika dianggap bukan inti, namun biasanya wakil dihitung inti.
-            // Sesuai daftar prompt: Pimpinan Inti (Ketua, Sekretaris, Bendahara)
             passJabatan = keywords.some(kw => jab.includes(kw));
         } else if (jabatan === 'ketua_saja') {
             passJabatan = jab.includes('ketua') && !jab.includes('wakil');
         }
 
-        return passWilayah && passJabatan && row.NO_HP; // Wajib punya no HP
+        // Pastikan nomor HP ada dan valid
+        const validPhone = formatPhoneForWaha(row.NO_HP);
+        return passWilayah && passJabatan && validPhone !== null;
     });
 
     updateUI();
@@ -179,20 +162,19 @@ function applyFilters() {
 
 function updateUI() {
     elTargetCount.innerText = filteredData.length;
-    // Animasi pop effect
     elTargetCount.style.transform = 'scale(1.3)';
     setTimeout(() => { elTargetCount.style.transform = 'scale(1)'; }, 200);
 }
 
-// Sanitasi Nomor HP ke Format WAHA (@c.us)
 function formatPhoneForWaha(phone) {
-    let p = phone.toString().replace(/\D/g, ''); // Hapus semua selain angka
+    if (!phone) return null;
+    let p = phone.toString().replace(/\D/g, ''); 
     if (p.startsWith('0')) p = '62' + p.substring(1);
     if (p.startsWith('8')) p = '628' + p.substring(1);
+    if (!p.startsWith('62') || p.length < 9) return null; 
     return `${p}@c.us`;
 }
 
-// Proses Eksekusi Broadcast
 async function confirmBroadcast() {
     const text = elPesan.value.trim();
     if (!text) {
@@ -217,7 +199,6 @@ async function confirmBroadcast() {
     }
 }
 
-// Engine Pengirim Bertahap (The Core)
 async function startBroadcastQueue(templateText) {
     const overlay = document.getElementById('progress-overlay');
     const bar = document.getElementById('progress-bar');
@@ -257,19 +238,16 @@ async function startBroadcastQueue(templateText) {
             logToUI(logger, `❌ Gagal: ${contact.NAMA_LENGKAP} (${error.message})`, 'log-error');
         }
 
-        // Update Progress Bar
         const percent = Math.round(((i + 1) / filteredData.length) * 100);
         bar.style.width = percent + '%';
         pText.innerText = `${i + 1} / ${filteredData.length} Diproses`;
 
-        // Delay dinamis 2 hingga 4 detik untuk keamanan Anti-Ban WA
         if (i < filteredData.length - 1) {
             const delay = Math.floor(Math.random() * 2000) + 2000;
             await new Promise(r => setTimeout(r, delay));
         }
     }
 
-    // Selesai
     setTimeout(() => {
         overlay.classList.add('hidden');
         Swal.fire({
