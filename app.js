@@ -1,6 +1,6 @@
 /**
- * FRONTEND LOGIC - MASTER VERSION
- * Fitur: Caching, Auto-Sanitize Number, Dynamic Filtering, Queue Anti-Ban WA
+ * FRONTEND LOGIC - MASTER FINAL VERSION
+ * Fitur: Caching, Auto-Sanitize Number, Dynamic Filtering, Queue Anti-Ban WA, NGROK BYPASS
  */
 
 let CONFIG = {
@@ -152,7 +152,6 @@ function applyFilters() {
             passJabatan = jab.includes('ketua') && !jab.includes('wakil');
         }
 
-        // Pastikan nomor HP ada dan valid
         const validPhone = formatPhoneForWaha(row.NO_HP);
         return passWilayah && passJabatan && validPhone !== null;
     });
@@ -219,7 +218,11 @@ async function startBroadcastQueue(templateText) {
         try {
             const response = await fetch(`${CONFIG.WAHA_URL}/api/sendText`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Accept': 'application/json',
+                    'ngrok-skip-browser-warning': 'true' // <--- INI KUNCI PENEMBUS NGROK GRATIS
+                },
                 body: JSON.stringify({
                     chatId: chatId,
                     text: personalizedText,
