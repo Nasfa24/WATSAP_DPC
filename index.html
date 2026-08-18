@@ -2,11 +2,13 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Broadcast WA - Pengurus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistem Broadcast WA - DPC</title>
+    <!-- Mencegah error favicon 404 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- SweetAlert2 untuk Notifikasi Non-Flat -->
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -44,7 +46,7 @@
                     <label for="filter-jabatan">Pilih Target Jabatan:</label>
                     <select id="filter-jabatan" class="styled-input">
                         <option value="semua">Semua Pengurus</option>
-                        <option value="inti">Pimpinan Inti (Ketua, Sekretaris, Bendahara Syuro & Tanfidziyah)</option>
+                        <option value="inti">Pimpinan Inti (Ketua, Sekretaris, Bendahara)</option>
                         <option value="ketua_saja">Ketua Saja (Syuro & Tanfidziyah)</option>
                     </select>
                 </div>
@@ -57,8 +59,8 @@
             <section class="card glass-effect">
                 <h2><i class="fa-solid fa-pen-to-square"></i> Isi Pesan</h2>
                 <div class="form-group">
-                    <label>Ketik pesan Anda (Gunakan {NAMA} untuk menyebut nama penerima secara otomatis):</label>
-                    <textarea id="pesan-text" class="styled-input" rows="6" placeholder="Assalamualaikum {NAMA}, undangan rapat..."></textarea>
+                    <label>Ketik pesan Anda (Gunakan {NAMA} untuk menyebut nama otomatis):</label>
+                    <textarea id="pesan-text" class="styled-input" rows="6" placeholder="Assalamualaikum {NAMA}, undangan rapat evaluasi..."></textarea>
                 </div>
                 <button id="btn-send" class="btn btn-primary btn-large"><i class="fa-solid fa-paper-plane"></i> Mulai Broadcast Sekarang</button>
             </section>
